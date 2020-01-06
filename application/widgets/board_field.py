@@ -11,7 +11,6 @@ class Pawn(Enum):
 
 
 class BoardField(QPushButton):
-
     def __init__(self, row, column):
         super().__init__()
         size = 50

@@ -4,7 +4,6 @@ from widgets.board_field import BoardField
 
 
 class Board(QGridLayout):
-
     def __init__(self):
         super().__init__()
         self.board_fields = [[]]

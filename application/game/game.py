@@ -39,7 +39,6 @@ class Game:
             for possible_move in self.possible_moves:
                 possible_move.to_field.possible()
         else:
-            self.turns[0] = self.current_player
             print("wrong filed")
 
     def move_pawn(self, field):

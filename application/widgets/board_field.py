@@ -6,8 +6,8 @@ from PyQt5.QtWidgets import QPushButton
 
 class Pawn(Enum):
     Empty = 0,
-    Black = 1,
-    White = 2
+    White = 1,
+    Black = 2,
 
 
 class BoardField(QPushButton):
@@ -19,19 +19,15 @@ class BoardField(QPushButton):
         self.row = row
         self.column = column
         self.pawn = Pawn.Empty
-        self.callback = lambda field: print("not define")
+        self.callback = lambda field: print("not defined")
         self.clicked.connect(self.on_click)
-        self.set_field_color()
+        self.set_fields_color()
         self.setStyleSheet(self.styleSheet() + ";font-size: 30px")
 
-    def set_field_color(self):
+    def set_fields_color(self):
         row_parity = (self.row % 2) == 0
         column_parity = (self.column % 2) == 0
-        if \
-                column_parity and not row_parity \
-                        or \
-                        row_parity and not column_parity:
-
+        if (column_parity and not row_parity) or (row_parity and not column_parity):
             self.setStyleSheet("background-color: grey")
         else:
             self.setStyleSheet("background-color: cornsilk")
@@ -42,7 +38,7 @@ class BoardField(QPushButton):
     def deactivate(self):
         self.setStyleSheet(self.styleSheet() + ";border: none")
 
-    def possible(self):
+    def mark_as_possible(self):
         self.setStyleSheet(self.styleSheet() + ";border: 3px dashed green;")
 
     def put_pawn(self, pawn):

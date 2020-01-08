@@ -3,33 +3,37 @@ from game.move import Move
 
 
 class MovementManager:
-    black_row_shifts = [1]
-    white_row_shifts = [-1]
-    col_shifts = [-1, 1]
-
     @staticmethod
-    def eval_moves(board, from_field, player):
-        possible_moves = []
-        row = from_field.row
-        column = from_field.column
+    def eval_moves(board, source_field, player):
+        possible_moves = list()
+        row = source_field.row
+        column = source_field.column
 
-        possible_row_shifts = list()
-        if player.pawn == Pawn.White:
-            possible_row_shifts = MovementManager.white_row_shifts
-        elif player.pawn == Pawn.Black:
-            possible_row_shifts = MovementManager.black_row_shifts
+        possible_row_shifts = MovementManager.get_possible_row_shifts(player)
+        possible_col_shifts = [-1, 1]
 
         for row_shift in possible_row_shifts:
-            for col_shift in MovementManager.col_shifts:
+            for col_shift in possible_col_shifts:
                 try:
-                    if board.board_fields[row + row_shift][column + col_shift].pawn == Pawn.Empty:
-                        possible_moves.append(Move(from_field, board.board_fields[row + row_shift][column + col_shift]))
-                    elif board.board_fields[row + row_shift][column + col_shift].pawn != player.pawn:
-                        if board.board_fields[row + row_shift * 2][column + col_shift * 2].pawn == Pawn.Empty:
+                    shifted_field = board.board_fields[row + row_shift][column + col_shift]
+                    if shifted_field.pawn == Pawn.Empty:
+                        possible_moves.append(Move(source_field, shifted_field))
+                    elif shifted_field.pawn != player.pawn:
+                        doubly_shifted_field = board.board_fields[row + 2 * row_shift][column + 2 * col_shift]
+                        if doubly_shifted_field.pawn == Pawn.Empty:
                             possible_moves.append(
-                                Move(from_field, board.board_fields[row + row_shift * 2][column + col_shift * 2],
-                                     board.board_fields[row + row_shift][column + col_shift]))
-                except IndexError:
-                    print("")
+                                Move(source_field, doubly_shifted_field, pawn_to_capture=shifted_field))
+                except IndexError as e:
+                    print(f"MovementManager raised an exception: {e}")
 
         return possible_moves
+
+    @staticmethod
+    def get_possible_row_shifts(player):
+        white_row_shifts = [-1]
+        black_row_shifts = [1]
+
+        if player.pawn == Pawn.White:
+            return white_row_shifts
+        elif player.pawn == Pawn.Black:
+            return black_row_shifts

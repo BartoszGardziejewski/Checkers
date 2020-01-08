@@ -1,7 +1,5 @@
 class Move:
-
-    def __init__(self, from_filed, to_field, paw_to_capture=None):
-        self.from_filed = from_filed
-        self.to_field = to_field
-        self.paw_to_capture = paw_to_capture
-
+    def __init__(self, source_field, destination_field, pawn_to_capture=None):
+        self.source_field = source_field
+        self.destination_field = destination_field
+        self.pawn_to_capture = pawn_to_capture

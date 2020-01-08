@@ -1,66 +1,54 @@
+from itertools import cycle
+
 from widgets.board_field import Pawn
 from game.player import Player
+from game.ai import AiPlayer
 from game.movement_manager import MovementManager
 
 
 class Game:
-    def __init__(self, board, black_player=Player(Pawn.Black), white_player=Player(Pawn.White)):
+    def __init__(self, board, white_player=Player(Pawn.White), black_player=AiPlayer(Pawn.Black)):
         self.board = board
-        self.board.set_all_callbacks(self.activate_field)
-        self.white_player = white_player
-        self.black_player = black_player
-        self.init_board()
-        self.turns = list()
-        self.turns.append(white_player)
-        self.turns.append(black_player)
+        self.board.set_all_callbacks(self.activate_source_field)
+        self.players = cycle([white_player, black_player])
+        self.current_player = next(self.players)
         self.active_field = None
-        self.current_player = None
         self.possible_moves = list()
 
-    def init_board(self):
-        for row in range(0, 3):
-            for column in range(1, 9, 2):
-                self.board.add_pawn(row, column - (row % 2), Pawn.Black)
-
-        for row in range(5, 8):
-            for column in range(1, 9, 2):
-                self.board.add_pawn(row, column - (row % 2), Pawn.White)
-
-    def activate_field(self, field):
-        self.current_player = self.turns[0]
+    def activate_source_field(self, field):
         if field.pawn == self.current_player.pawn:
-            self.active_field = field
             field.activate()
-            self.board.set_all_callbacks(self.move_pawn)
+            self.active_field = field
             self.possible_moves = MovementManager.eval_moves(self.board, self.active_field, self.current_player)
             for possible_move in self.possible_moves:
-                possible_move.to_field.possible()
+                possible_move.destination_field.mark_as_possible()
+            self.board.set_all_callbacks(self.activate_destination_field)
         else:
             print("wrong field")
 
-    def move_pawn(self, field):
+    def activate_destination_field(self, field):
         if field == self.active_field:
-            self.deactivate_pawn()
+            self.deactivate_field()
         elif field.pawn == self.current_player.pawn:
-            self.deactivate_pawn()
-            self.activate_field(field)
+            self.deactivate_field()
+            self.activate_source_field(field)
         else:
-            possible_move = next((move for move in self.possible_moves if move.to_field == field), None)
+            possible_move = next((move for move in self.possible_moves if move.destination_field == field), None)
             if possible_move is None:
                 print("move not possible")
             else:
                 self.active_field.remove_pawn()
                 field.put_pawn(self.current_player.pawn)
-                self.turns.reverse()
-                if possible_move.paw_to_capture:
-                    possible_move.paw_to_capture.remove_pawn()
+                if possible_move.pawn_to_capture:
+                    possible_move.pawn_to_capture.remove_pawn()
                     print("captured pawn!")
-                self.deactivate_pawn()
-                print("moved & deactivated")
+                self.deactivate_field()
+                self.current_player = next(self.players)
+                print("moved & deactivated pawn, changed players")
 
-    def deactivate_pawn(self):
+    def deactivate_field(self):
         self.active_field.deactivate()
         for possible_moves in self.possible_moves:
-            possible_moves.to_field.deactivate()
+            possible_moves.destination_field.deactivate()
         self.possible_moves = list()
-        self.board.set_all_callbacks(self.activate_field)
+        self.board.set_all_callbacks(self.activate_source_field)

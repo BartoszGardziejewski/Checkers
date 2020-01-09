@@ -14,10 +14,11 @@ class Game():
         self.current_player = next(self.players)
         self.active_field = None
         self.possible_moves = list()
+        self.turns_completed = 0
         self.white_score, self.black_score = self.update_scores()
 
     def activate_source_field(self, field):
-        if not self.board.get_possible_source_fields(self.current_player.pawn):
+        if not self.board.get_fields_with_pawns_of_type(self.current_player.pawn):
             print(f'{self.current_player.pawn} has no more pawns to use')
         elif field.pawn == self.current_player.pawn:
             field.activate()
@@ -45,6 +46,8 @@ class Game():
                 if possible_move.pawn_to_capture:
                     possible_move.pawn_to_capture.remove_pawn()
                 self.deactivate_field()
+                self.current_player = next(self.players)
+                self.turns_completed += 1
                 self.move_ai()
         self.update_scores()
 
@@ -56,12 +59,13 @@ class Game():
         self.board.set_all_callbacks(self.activate_source_field)
 
     def move_ai(self):
-        self.current_player = next(self.players)
         self.current_player.make_move(self.board)
         self.current_player = next(self.players)
+        self.turns_completed += 1
 
     def update_scores(self):
-        white_score = self.board.get_possible_source_fields(Pawn.White)
-        black_score = self.board.get_possible_source_fields(Pawn.Black)
-        print(f'white_pieces: {len(white_score)}; black_pieces: {len(black_score)}')
+        white_score = self.board.get_fields_with_pawns_of_type(Pawn.White)
+        black_score = self.board.get_fields_with_pawns_of_type(Pawn.Black)
+        print(
+            f'turns_completed: {self.turns_completed}; white_pieces: {len(white_score)}; black_pieces: {len(black_score)}')
         return white_score, black_score

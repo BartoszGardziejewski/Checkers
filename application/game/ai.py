@@ -2,6 +2,7 @@ import random
 
 from game.player import Player
 from game.movement_manager import MovementManager
+from widgets.board_field import Pawn
 
 
 def get_moves_that_capture(possible_moves):
@@ -20,7 +21,8 @@ class AiPlayer(Player):
             chosen_move.pawn_to_capture.remove_pawn()
 
     def choose_move(self, board):
-        possible_source_fields = board.get_possible_source_fields(self.pawn)
+        fields_occupied_by_opponent = board.get_fields_with_pawns_of_type(self.get_opponents_pawn_type())
+        possible_source_fields = board.get_fields_with_pawns_of_type(self.pawn)
         possible_moves = list()
         for possible_source_field in possible_source_fields:
             moves_per_field = MovementManager.eval_moves(board, possible_source_field, self)
@@ -34,3 +36,6 @@ class AiPlayer(Player):
             return random.choice(possible_moves)
         else:
             print('ERROR: No possible moves for AI')
+
+    def get_opponents_pawn_type(self):
+        return Pawn.White if self.pawn is Pawn.Black else Pawn.Black

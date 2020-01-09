@@ -10,5 +10,5 @@ class Application(QWidget):
     def __init__(self):
         super().__init__()
         self.board = Board()
-        self.game = Game(self.board)
         self.setLayout(self.board)
+        self.game = Game(self.board)

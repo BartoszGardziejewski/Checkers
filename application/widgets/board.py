@@ -25,6 +25,14 @@ class Board(QGridLayout):
     def add_pawn(self, row, column, pawn):
         self.board_fields[row][column].put_pawn(pawn)
 
+    def get_possible_source_fields(self, pawn):
+        possible_source_fields = list()
+        for fields in self.board_fields:
+            for field in fields:
+                if field.pawn == pawn:
+                    possible_source_fields.append(field)
+        return possible_source_fields
+
     def set_all_callbacks(self, callback):
         for board_fields in self.board_fields:
             for board_field in board_fields:

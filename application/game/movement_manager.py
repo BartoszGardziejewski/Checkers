@@ -24,16 +24,14 @@ class MovementManager:
                             possible_moves.append(
                                 Move(source_field, doubly_shifted_field, pawn_to_capture=shifted_field))
                 except IndexError as e:
-                    print(f"MovementManager raised an exception: {e}")
+                    # print(f"MovementManager raised an exception: {e}")
+                    pass
 
         return possible_moves
 
     @staticmethod
     def get_possible_row_shifts(player):
-        white_row_shifts = [-1]
-        black_row_shifts = [1]
-
         if player.pawn == Pawn.White:
-            return white_row_shifts
+            return [-1]
         elif player.pawn == Pawn.Black:
-            return black_row_shifts
+            return [1]

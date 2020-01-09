@@ -14,23 +14,22 @@ class BoardField(QPushButton):
     def __init__(self, row, column):
         super().__init__()
         size = 50
-        self.setMinimumSize(QSize(size, size))
-        self.setMaximumSize(QSize(size, size))
+        self.setFixedSize(QSize(size, size))
+        self.callback = lambda field: print("Error: BoardField.callback NOT DEFINED")
+        self.clicked.connect(self.on_click)
         self.row = row
         self.column = column
         self.pawn = Pawn.Empty
-        self.callback = lambda field: print("not defined")
-        self.clicked.connect(self.on_click)
-        self.set_fields_color()
-        self.setStyleSheet(self.styleSheet() + ";font-size: 30px")
+        self.set_fields_style()
 
-    def set_fields_color(self):
+    def set_fields_style(self):
         row_parity = (self.row % 2) == 0
         column_parity = (self.column % 2) == 0
         if (column_parity and not row_parity) or (row_parity and not column_parity):
-            self.setStyleSheet("background-color: grey")
+            self.setStyleSheet(self.styleSheet() + ";background-color: grey")
         else:
-            self.setStyleSheet("background-color: cornsilk")
+            self.setStyleSheet(self.styleSheet() + ";background-color: cornsilk")
+        self.setStyleSheet(self.styleSheet() + ";font-size: 30px")
 
     def activate(self):
         self.setStyleSheet(self.styleSheet() + ";border: 3px dashed blue;")

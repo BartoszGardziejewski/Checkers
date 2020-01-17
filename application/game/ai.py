@@ -15,14 +15,14 @@ class AiPlayer(Player):
         return self._make_move(chosen_move)
 
     def _make_move(self, chosen_move):
-        was_pawn_capture = False
+        was_pawn_captured = False
         chosen_move.source_field.remove_pawn()
         chosen_move.destination_field.put_pawn(self.pawn)
         if chosen_move.pawn_to_capture:
             chosen_move.pawn_to_capture.remove_pawn()
-            was_pawn_capture = True
+            was_pawn_captured = True
         self.last_field = chosen_move.destination_field
-        return was_pawn_capture
+        return was_pawn_captured
 
     def make_next_move(self, board):
         possible_next_moves = MovementManager.eval_moves(board, self.last_field, self)

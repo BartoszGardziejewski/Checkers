@@ -55,7 +55,8 @@ class Game():
                 print("move not possible")
             else:
                 self._make_a_move(field, possible_move)
-                self._end_turn()
+                if len(self.mandatory_moves) == 0:
+                    self._end_turn()
 
     def _end_turn(self):
         self.current_player = next(self.players)
@@ -67,14 +68,18 @@ class Game():
     def _make_a_move(self, field, possible_move):
         self.active_field.remove_pawn()
         field.put_pawn(self.current_player.pawn)
+        self.deactivate_field()
+        self.mandatory_moves.clear()
         if possible_move.pawn_to_capture:
             possible_move.pawn_to_capture.remove_pawn()
-        self.deactivate_field()
+            possible_next_move = MovementManager.eval_moves(self.board, field, self.current_player)
+            self.mandatory_moves = MovementManager.extract_capturing_moves(possible_next_move)
+            if len(self.mandatory_moves) > 0:
+                field.mark_as_mandatory()
 
     def _check_mandatory_capture(self):
         possible_moves = MovementManager.get_possible_moves_for_player(self.board, self.current_player)
         self.mandatory_moves = MovementManager.extract_capturing_moves(possible_moves)
-
 
     def deactivate_field(self):
         self.active_field.deactivate()
@@ -84,7 +89,9 @@ class Game():
         self.board.set_all_callbacks(self.activate_source_field)
 
     def move_ai(self):
-        self.current_player.make_move(self.board)
+        was_pawn_captured = self.current_player.make_move(self.board)
+        while was_pawn_captured:
+            was_pawn_captured = self.current_player.make_next_move(self.board)
         self.current_player = next(self.players)
         self.turns_completed += 1
 

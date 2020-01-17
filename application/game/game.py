@@ -13,9 +13,19 @@ class Game():
         self.players = cycle([white_player, black_player])
         self.current_player = next(self.players)
         self.active_field = None
+        self.mandatory_moves = list()
         self.possible_moves = list()
         self.turns_completed = 0
         self.white_score, self.black_score = self.update_scores()
+
+    def _start_new_turn(self):
+        self._check_mandatory_capture()
+        self._mark_mandatory_moves()
+
+    def _mark_mandatory_moves(self):
+        if len(self.mandatory_moves) > 0:
+            for mandatory_move in self.mandatory_moves:
+                mandatory_move.source_field.mark_as_mandatory()
 
     def activate_source_field(self, field):
         if not self.board.get_fields_with_pawns_of_type(self.current_player.pawn):
@@ -24,6 +34,9 @@ class Game():
             field.activate()
             self.active_field = field
             self.possible_moves = MovementManager.eval_moves(self.board, self.active_field, self.current_player)
+            if len(self.mandatory_moves) > 0:
+                print("there are mandatory moves")
+                self.possible_moves = set(self.mandatory_moves).intersection(set(self.possible_moves))
             for possible_move in self.possible_moves:
                 possible_move.destination_field.mark_as_possible()
             self.board.set_all_callbacks(self.activate_destination_field)
@@ -41,15 +54,27 @@ class Game():
             if possible_move is None:
                 print("move not possible")
             else:
-                self.active_field.remove_pawn()
-                field.put_pawn(self.current_player.pawn)
-                if possible_move.pawn_to_capture:
-                    possible_move.pawn_to_capture.remove_pawn()
-                self.deactivate_field()
-                self.current_player = next(self.players)
-                self.turns_completed += 1
-                self.move_ai()
+                self._make_a_move(field, possible_move)
+                self._end_turn()
+
+    def _end_turn(self):
+        self.current_player = next(self.players)
+        self.turns_completed += 1
+        self.move_ai()
         self.update_scores()
+        self._start_new_turn()
+
+    def _make_a_move(self, field, possible_move):
+        self.active_field.remove_pawn()
+        field.put_pawn(self.current_player.pawn)
+        if possible_move.pawn_to_capture:
+            possible_move.pawn_to_capture.remove_pawn()
+        self.deactivate_field()
+
+    def _check_mandatory_capture(self):
+        possible_moves = MovementManager.get_possible_moves_for_player(self.board, self.current_player)
+        self.mandatory_moves = MovementManager.extract_capturing_moves(possible_moves)
+
 
     def deactivate_field(self):
         self.active_field.deactivate()

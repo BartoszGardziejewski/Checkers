@@ -7,7 +7,8 @@ class Board(QGridLayout):
     def __init__(self):
         super().__init__()
         self.board_fields = list(list())
-        for row in range(0, 8):
+        self.size = 8
+        for row in range(0, self.size):
             self.board_fields.append(list())
             for column in range(0, 8):
                 board_field = BoardField(row, column)

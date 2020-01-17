@@ -40,6 +40,9 @@ class BoardField(QPushButton):
     def mark_as_possible(self):
         self.setStyleSheet(self.styleSheet() + ";border: 3px dashed green;")
 
+    def mark_as_mandatory(self):
+        self.setStyleSheet(self.styleSheet() + ";border: 3px dashed red;")
+
     def put_pawn(self, pawn):
         self.setText('O')
         if pawn == Pawn.Black:

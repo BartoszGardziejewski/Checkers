@@ -5,10 +5,6 @@ from game.movement_manager import MovementManager
 from widgets.board_field import Pawn
 
 
-def get_moves_that_capture(possible_moves):
-    return [move for move in possible_moves if move.pawn_to_capture]
-
-
 class AiPlayer(Player):
     def __init__(self, pawn):
         super().__init__(pawn)
@@ -21,15 +17,8 @@ class AiPlayer(Player):
             chosen_move.pawn_to_capture.remove_pawn()
 
     def choose_move(self, board):
-        fields_occupied_by_opponent = board.get_fields_with_pawns_of_type(self.get_opponents_pawn_type())
-        possible_source_fields = board.get_fields_with_pawns_of_type(self.pawn)
-        possible_moves = list()
-        for possible_source_field in possible_source_fields:
-            moves_per_field = MovementManager.eval_moves(board, possible_source_field, self)
-            if moves_per_field:
-                possible_moves.extend(moves_per_field)
-
-        capturing_moves = get_moves_that_capture(possible_moves)
+        possible_moves = MovementManager.get_possible_moves_for_player(board, self)
+        capturing_moves = MovementManager.extract_capturing_moves(possible_moves)
         if capturing_moves:
             return random.choice(capturing_moves)
         if possible_moves:

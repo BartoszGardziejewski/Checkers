@@ -1,13 +1,16 @@
 from itertools import cycle
 
+from widgets.board_field import BoardField
 from widgets.board_field import Pawn
 from game.player import Player
 from game.ai import AiPlayer
 from game.movement_manager import MovementManager
 
 
-class Game():
-    def __init__(self, board, white_player=Player(Pawn.White), black_player=AiPlayer(Pawn.Black)):
+class Game:
+    def __init__(self, board,
+                 white_player=Player([Pawn.White, Pawn.White_Q]),
+                 black_player=AiPlayer([Pawn.Black, Pawn.Black_Q])):
         self.board = board
         self.board.set_all_callbacks(self.activate_source_field)
         self.players = cycle([white_player, black_player])
@@ -28,9 +31,9 @@ class Game():
                 mandatory_move.source_field.mark_as_mandatory()
 
     def activate_source_field(self, field):
-        if not self.board.get_fields_with_pawns_of_type(self.current_player.pawn):
+        if not self.board.get_fields_with_pawns_of_types(self.current_player.pawns):
             print(f'{self.current_player.pawn} has no more pawns to use')
-        elif field.pawn == self.current_player.pawn:
+        elif field.pawn in self.current_player.pawns:
             field.activate()
             self.active_field = field
             self.possible_moves = MovementManager.eval_moves(self.board, self.active_field, self.current_player)
@@ -46,7 +49,7 @@ class Game():
     def activate_destination_field(self, field):
         if field == self.active_field:
             self.deactivate_field()
-        elif field.pawn == self.current_player.pawn:
+        elif field.pawn in self.current_player.pawns:
             self.deactivate_field()
             self.activate_source_field(field)
         else:
@@ -66,8 +69,8 @@ class Game():
         self._start_new_turn()
 
     def _make_a_move(self, field, possible_move):
+        field.put_pawn(possible_move.source_field.pawn)
         self.active_field.remove_pawn()
-        field.put_pawn(self.current_player.pawn)
         self.deactivate_field()
         self.mandatory_moves.clear()
         if possible_move.pawn_to_capture:
@@ -76,6 +79,8 @@ class Game():
             self.mandatory_moves = MovementManager.extract_capturing_moves(possible_next_move)
             if len(self.mandatory_moves) > 0:
                 field.mark_as_mandatory()
+        if BoardField.should_the_pawn_be_crowned(field):
+            BoardField.crowning_the_pawn(field)
 
     def _check_mandatory_capture(self):
         possible_moves = MovementManager.get_possible_moves_for_player(self.board, self.current_player)

@@ -3,6 +3,7 @@ import random
 from game.player import Player
 from game.movement_manager import MovementManager
 from widgets.board_field import Pawn
+from widgets.board_field import BoardField
 
 
 class AiPlayer(Player):
@@ -19,12 +20,14 @@ class AiPlayer(Player):
 
     def _make_move(self, chosen_move):
         was_pawn_captured = False
+        chosen_move.destination_field.put_pawn(chosen_move.source_field.pawn)
         chosen_move.source_field.remove_pawn()
-        chosen_move.destination_field.put_pawn(self.pawn)
         if chosen_move.pawn_to_capture:
             chosen_move.pawn_to_capture.remove_pawn()
             was_pawn_captured = True
         self.last_field = chosen_move.destination_field
+        if BoardField.should_the_pawn_be_crowned(chosen_move.destination_field):
+            BoardField.crowning_the_pawn(chosen_move.destination_field)
         return was_pawn_captured
 
     def make_next_move(self, board):

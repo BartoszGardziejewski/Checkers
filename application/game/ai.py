@@ -13,7 +13,10 @@ class AiPlayer(Player):
 
     def make_move(self, board):
         chosen_move = self.choose_move(board)
-        return self._make_move(chosen_move)
+        if chosen_move:
+            return self._make_move(chosen_move)
+        else:
+            return None
 
     def _make_move(self, chosen_move):
         was_pawn_captured = False
@@ -43,7 +46,8 @@ class AiPlayer(Player):
         if possible_moves:
             return random.choice(possible_moves)
         else:
-            print('ERROR: No possible moves for AI')
+            print('No possible moves for AI')
+            return None
 
     def get_opponents_pawn_type(self):
         return Pawn.White if self.pawn is Pawn.Black else Pawn.Black

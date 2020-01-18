@@ -27,7 +27,7 @@ class AiPlayer(Player):
             was_pawn_captured = True
         self.last_field = chosen_move.destination_field
         if BoardField.should_the_pawn_be_crowned(chosen_move.destination_field):
-            BoardField.crowned_pawn(chosen_move.destination_field)
+            BoardField.crowning_the_pawn(chosen_move.destination_field)
         return was_pawn_captured
 
     def make_next_move(self, board):

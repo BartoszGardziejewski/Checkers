@@ -4,11 +4,13 @@ from game.player import Player
 from game.movement_manager import MovementManager
 from widgets.board_field import Pawn
 from widgets.board_field import BoardField
+from game.ai.random_strategy import RandomStrategy
 
 
 class AiPlayer(Player):
     def __init__(self, pawn):
         self.last_field = None
+        self.strategy = RandomStrategy
         super().__init__(pawn)
 
     def make_move(self, board):

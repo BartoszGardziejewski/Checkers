@@ -23,8 +23,6 @@ class Board(QGridLayout):
             for column in range(1, 9, 2):
                 self.add_pawn(row, column - (row % 2), Pawn.White)
 
-        self.add_pawn(5, 0, Pawn.White_Q)
-
     def add_pawn(self, row, column, pawn):
         self.board_fields[row][column].put_pawn(pawn)
 

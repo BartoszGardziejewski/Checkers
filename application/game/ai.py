@@ -10,8 +10,8 @@ class AiPlayer(Player):
         self.last_field = None
         super().__init__(pawn)
 
-    def make_move(self, board):
-        chosen_move = self.choose_move(board)
+    def make_move(self, board, turns_completed):
+        chosen_move = self.choose_move(board, turns_completed)
         if chosen_move:
             return self._make_move(chosen_move)
         else:
@@ -27,7 +27,7 @@ class AiPlayer(Player):
         self.last_field = chosen_move.destination_field
         return was_pawn_captured
 
-    def make_next_move(self, board):
+    def make_next_move(self, board, turns_completed):
         possible_next_moves = MovementManager.eval_moves(board, self.last_field, self)
         possible_next_moves = MovementManager.extract_capturing_moves(possible_next_moves)
         if len(possible_next_moves) == 0:
@@ -35,7 +35,7 @@ class AiPlayer(Player):
         next_move = random.choice(possible_next_moves)
         return self._make_move(next_move)
 
-    def choose_move(self, board):
+    def choose_move(self, board, turns_completed):
         possible_moves = MovementManager.get_possible_moves_for_player(board, self)
         capturing_moves = MovementManager.extract_capturing_moves(possible_moves)
         if capturing_moves:

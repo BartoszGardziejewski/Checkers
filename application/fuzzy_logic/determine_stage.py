@@ -13,7 +13,7 @@ def determine_stage(completed_turns_number, total_pieces_number):
     pieces_names = ['low', 'medium', 'high']
     pieces.automf(names=pieces_names)
 
-    stage = ctrl.Consequent(np.arange(0, 4, step=1, dtype=int), 'stage')
+    stage = ctrl.Consequent(np.arange(0, 40, step=1, dtype=int), 'stage')
     stage_names = ['beginning', 'early_middle', 'late_middle', 'endgame']
     stage.automf(names=stage_names)
 
@@ -72,8 +72,13 @@ def view_control_space(sim):
     surf = ax.plot_surface(x, y, z, rstride=1, cstride=1, cmap='viridis',
                            linewidth=0.4, antialiased=False)
 
+    fig.colorbar(surf, shrink=0.5, aspect=5)
+
     ax.set_xlabel('turns')
     ax.set_ylabel('pieces')
     ax.set_zlabel('stage')
 
     ax.view_init(30, 200)
+
+
+determine_stage(100, 20)

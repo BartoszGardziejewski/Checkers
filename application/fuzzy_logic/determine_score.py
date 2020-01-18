@@ -13,7 +13,7 @@ def determine_score(white_pieces, black_pieces):
     bp_names = ['low', 'medium_low', 'medium_high', 'high']
     bp.automf(names=bp_names)
 
-    score = ctrl.Consequent(np.arange(0, 5, step=1, dtype=int), 'score')
+    score = ctrl.Consequent(np.arange(0, 50, step=1, dtype=int), 'score')
     score_names = ['losing', 'slightly_losing', 'tie', 'slightly_winning', 'winning']
     score.automf(names=score_names)
 
@@ -81,8 +81,13 @@ def view_control_space(sim):
     surf = ax.plot_surface(x, y, z, rstride=1, cstride=1, cmap='viridis',
                            linewidth=0.4, antialiased=False)
 
+    fig.colorbar(surf, shrink=0.5, aspect=5)
+
     ax.set_xlabel('white_pieces')
     ax.set_ylabel('black_pieces')
     ax.set_zlabel('score')
 
     ax.view_init(30, 200)
+
+
+determine_score(10, 10)

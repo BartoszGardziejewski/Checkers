@@ -5,15 +5,15 @@ from mpl_toolkits.mplot3d import Axes3D  # Required for 3D plotting
 
 
 def determine_strategy(stage_input, score_input):
-    stage = ctrl.Antecedent(np.arange(0, 4, step=1, dtype=int), 'stage')
+    stage = ctrl.Antecedent(np.arange(0, 40, step=1, dtype=int), 'stage')
     stage_names = ['beginning', 'early_middle', 'late_middle', 'endgame']
     stage.automf(names=stage_names)
 
-    score = ctrl.Antecedent(np.arange(0, 5, step=1, dtype=int), 'score')
+    score = ctrl.Antecedent(np.arange(0, 50, step=1, dtype=int), 'score')
     score_names = ['losing', 'slightly_losing', 'tie', 'slightly_winning', 'winning']
     score.automf(names=score_names)
 
-    strategy = ctrl.Consequent(np.arange(0, 4, step=1, dtype=int), 'strategy')
+    strategy = ctrl.Consequent(np.arange(0, 40, step=1, dtype=int), 'strategy')
     strategy_names = ['defensive', 'slightly_defensive', 'slightly_aggressive', 'aggressive']
     strategy.automf(names=strategy_names)
 
@@ -62,13 +62,13 @@ def determine_strategy(stage_input, score_input):
 
 
 def view_control_space(sim):
-    x_space = np.arange(0, 5)
-    y_space = np.arange(0, 6)
+    x_space = np.arange(0, 50)
+    y_space = np.arange(0, 60)
     x, y = np.meshgrid(x_space, y_space)
     z = np.zeros_like(x)
 
-    for stage in range(4):
-        for score in range(5):
+    for stage in range(40):
+        for score in range(50):
             sim.input['stage'] = x[stage, score]
             sim.input['score'] = y[stage, score]
             sim.compute()
@@ -80,8 +80,13 @@ def view_control_space(sim):
     surf = ax.plot_surface(x, y, z, rstride=1, cstride=1, cmap='viridis',
                            linewidth=0.4, antialiased=False)
 
+    fig.colorbar(surf, shrink=0.5, aspect=5)
+
     ax.set_xlabel('stage')
     ax.set_ylabel('score')
     ax.set_zlabel('strategy')
 
     ax.view_init(30, 200)
+
+
+determine_strategy(30, 10)

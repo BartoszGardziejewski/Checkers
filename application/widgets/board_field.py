@@ -83,7 +83,7 @@ class BoardField(QPushButton):
             return False
 
     @staticmethod
-    def crowned_pawn(field):
+    def crowning_the_pawn(field):
         if field.pawn == Pawn.Black:
             field.put_pawn(Pawn.Black_Q)
         elif field.pawn == Pawn.White:

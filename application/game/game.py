@@ -80,7 +80,7 @@ class Game:
             if len(self.mandatory_moves) > 0:
                 field.mark_as_mandatory()
         if BoardField.should_the_pawn_be_crowned(field):
-            BoardField.crowned_pawn(field)
+            BoardField.crowning_the_pawn(field)
 
     def _check_mandatory_capture(self):
         possible_moves = MovementManager.get_possible_moves_for_player(self.board, self.current_player)

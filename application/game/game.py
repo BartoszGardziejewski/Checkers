@@ -3,7 +3,7 @@ from itertools import cycle
 from widgets.board_field import BoardField
 from widgets.board_field import Pawn
 from game.player import Player
-from game.ai import AiPlayer
+from game.ai.ai import AiPlayer
 from game.movement_manager import MovementManager
 
 

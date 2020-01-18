@@ -42,14 +42,7 @@ class AiPlayer(Player):
 
     def choose_move(self, board):
         possible_moves = MovementManager.get_possible_moves_for_player(board, self)
-        capturing_moves = MovementManager.extract_capturing_moves(possible_moves)
-        if capturing_moves:
-            return random.choice(capturing_moves)
-        if possible_moves:
-            return random.choice(possible_moves)
-        else:
-            print('No possible moves for AI')
-            return None
+        return self.strategy.evaluate_moves_weights(possible_moves, board)
 
     def get_opponents_pawn_type(self):
         return Pawn.White if self.pawn is Pawn.Black else Pawn.Black

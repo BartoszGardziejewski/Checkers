@@ -23,8 +23,17 @@ class Board(QGridLayout):
             for column in range(1, 9, 2):
                 self.add_pawn(row, column - (row % 2), Pawn.White)
 
+        self.add_pawn(5, 0, Pawn.White_Q)
+
     def add_pawn(self, row, column, pawn):
         self.board_fields[row][column].put_pawn(pawn)
+
+    def get_fields_with_pawns_of_types(self, pawns):
+        fields = []
+        for pawn in pawns:
+            fields = fields + self.get_fields_with_pawns_of_type(pawn)
+
+        return fields
 
     def get_fields_with_pawns_of_type(self, pawn):
         possible_source_fields = list()

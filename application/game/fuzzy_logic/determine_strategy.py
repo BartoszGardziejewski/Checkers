@@ -14,8 +14,8 @@ class Strategy(Enum):
 
 
 def determine_strategy(stage_input, score_input):
-    stage = ctrl.Antecedent(np.arange(0, 40, step=1, dtype=int), 'stage')
-    stage_names = ['beginning', 'early_middle', 'late_middle', 'endgame']
+    stage = ctrl.Antecedent(np.arange(0, 50, step=1, dtype=int), 'stage')
+    stage_names = ['beginning', 'early_middle', 'middle', 'late_middle', 'endgame']
     stage.automf(names=stage_names)
 
     score = ctrl.Antecedent(np.arange(0, 50, step=1, dtype=int), 'score')
@@ -26,34 +26,44 @@ def determine_strategy(stage_input, score_input):
     strategy_names = ['defensive', 'slightly_defensive', 'slightly_aggressive', 'aggressive']
     strategy.automf(names=strategy_names)
 
-    rule_defensive = ctrl.Rule(antecedent=(score['losing'] | (stage['beginning'] & score['slightly_losing'])),
+    rule_defensive = ctrl.Rule(antecedent=((stage['endgame'] & score['losing'])
+                                           | (stage['endgame'] & score['slightly_losing'])
+                                           | (stage['endgame'] & score['tie'])
+                                           | (stage['late_middle'] & score['losing'])
+                                           | (stage['late_middle'] & score['slightly_losing'])
+                                           | (stage['middle'] & score['losing'])),
                                consequent=strategy['defensive'],
                                label='rule_defensive')
-    rule_slightly_defensive = ctrl.Rule(antecedent=((stage['early_middle'] & score['slightly_losing'])
-                                                    | (stage['late_middle'] & score['slightly_losing'])
-                                                    | (stage['endgame'] & score['slightly_losing'])
-                                                    | (stage['early_middle'] & score['tie'])
+    rule_slightly_defensive = ctrl.Rule(antecedent=((stage['endgame'] & score['slightly_winning'])
                                                     | (stage['late_middle'] & score['tie'])
-                                                    | (stage['early_middle'] & score['slightly_winning'])),
+                                                    | (stage['middle'] & score['slightly_losing'])
+                                                    | (stage['early_middle'] & score['losing'])
+                                                    | (stage['early_middle'] & score['slightly_losing'])
+                                                    | (stage['beginning'] & score['losing'])),
                                         consequent=strategy['slightly_defensive'],
                                         label='rule_slightly_defensive')
-    rule_slightly_aggressive = ctrl.Rule(antecedent=((stage['beginning'] & score['tie'])
-                                                     | (stage['endgame'] & score['tie'])
-                                                     | (stage['beginning'] & score['slightly_winning'])
+    rule_slightly_aggressive = ctrl.Rule(antecedent=((stage['endgame'] & score['winning'])
                                                      | (stage['late_middle'] & score['slightly_winning'])
-                                                     | (stage['beginning'] & score['winning'])
-                                                     | (stage['early_middle'] & score['winning'])),
+                                                     | (stage['late_middle'] & score['winning'])
+                                                     | (stage['middle'] & score['tie'])
+                                                     | (stage['middle'] & score['slightly_winning'])
+                                                     | (stage['early_middle'] & score['tie'])
+                                                     | (stage['beginning'] & score['slightly_losing'])),
                                          consequent=strategy['slightly_aggressive'],
                                          label='rule_slightly_aggressive')
-    rule_aggressive = ctrl.Rule(antecedent=((stage['endgame'] & score['slightly_winning'])
-                                            | (stage['endgame'] & score['winning'])
-                                            | (stage['late_middle'] & score['winning'])),
+    rule_aggressive = ctrl.Rule(antecedent=((stage['middle'] & score['winning'])
+                                            | (stage['early_middle'] & score['slightly_winning'])
+                                            | (stage['early_middle'] & score['winning'])
+                                            | (stage['beginning'] & score['tie'])
+                                            | (stage['beginning'] & score['slightly_winning'])
+                                            | (stage['beginning'] & score['winning'])),
                                 consequent=strategy['aggressive'],
                                 label='rule_aggressive')
 
     system = ctrl.ControlSystem(
         rules=[rule_defensive, rule_slightly_defensive, rule_slightly_aggressive, rule_aggressive])
     simulation = ctrl.ControlSystemSimulation(system, clip_to_bounds=True)
+    # view_control_space(simulation)
 
     simulation.input['stage'] = stage_input
     simulation.input['score'] = score_input
@@ -61,8 +71,9 @@ def determine_strategy(stage_input, score_input):
     simulation.compute()
     out = simulation.output['strategy']
 
-    # view_control_space(simulation)
-    # print(simulation.output['strategy'])
+    # print('out', out)
+    # stage.view(sim=simulation)
+    # score.view(sim=simulation)
     # strategy.view(sim=simulation)
 
     output_strategy = None
@@ -77,12 +88,12 @@ def determine_strategy(stage_input, score_input):
 
 
 def view_control_space(sim):
-    x_space = np.arange(0, 41)
+    x_space = np.arange(0, 51)
     y_space = np.arange(0, 51)
     x, y = np.meshgrid(x_space, y_space)
     z = np.zeros_like(x)
 
-    for stage in range(40):
+    for stage in range(50):
         for score in range(50):
             sim.input['stage'] = x[score, stage]
             sim.input['score'] = y[score, stage]

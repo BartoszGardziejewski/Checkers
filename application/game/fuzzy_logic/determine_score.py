@@ -47,6 +47,7 @@ def determine_score(white_pieces, black_pieces):
     system = ctrl.ControlSystem(
         rules=[rule_losing, rule_slightly_losing, rule_tie, rule_slightly_winning, rule_winning])
     simulation = ctrl.ControlSystemSimulation(system, clip_to_bounds=True)
+    # view_control_space(simulation)
 
     simulation.input['wp'] = white_pieces
     simulation.input['bp'] = black_pieces
@@ -54,8 +55,9 @@ def determine_score(white_pieces, black_pieces):
     simulation.compute()
     out = simulation.output['score']
 
-    # view_control_space(simulation)
-    # print(simulation.output['score'])
+    # print(out)
+    # wp.view(sim=simulation)
+    # bp.view(sim=simulation)
     # stage.view(sim=simulation)
 
     output_score = None

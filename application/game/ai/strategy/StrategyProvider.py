@@ -1,5 +1,7 @@
+import random
 
 from game.ai.strategy.aggressive_strategy import AggressiveStrategy
+from game.ai.strategy.defensive_strategy import DefenciveStrategy
 
 
 class StrategyProvider:
@@ -10,4 +12,10 @@ class StrategyProvider:
         self.board = board
 
     def provide_strategy(self):
-        return AggressiveStrategy(self.ai, self.enemy, self.board)
+        possible_strategies = [
+            AggressiveStrategy,
+            DefenciveStrategy
+        ]
+        strategy = random.choice(possible_strategies)
+        print(strategy.name())
+        return strategy(self.ai, self.enemy, self.board)

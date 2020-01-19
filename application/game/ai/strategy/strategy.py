@@ -97,6 +97,10 @@ class AbstractStrategy:
 
         return selected_moves
 
+    @staticmethod
+    def name():
+        return "abstract strategy !!! should not be used !!!"
+
 
 class MoveWithWeight:
     def __init__(self, move, weight):

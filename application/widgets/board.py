@@ -26,6 +26,13 @@ class Board(QGridLayout):
     def add_pawn(self, row, column, pawn):
         self.board_fields[row][column].put_pawn(pawn)
 
+    def get_fields_with_pawns_of_types(self, pawns):
+        fields = []
+        for pawn in pawns:
+            fields = fields + self.get_fields_with_pawns_of_type(pawn)
+
+        return fields
+
     def get_fields_with_pawns_of_type(self, pawn):
         possible_source_fields = list()
         for fields in self.board_fields:
@@ -38,3 +45,15 @@ class Board(QGridLayout):
         for board_fields in self.board_fields:
             for board_field in board_fields:
                 board_field.set_clicked_callback(callback)
+
+    def get_adjacent_fields(self, field):
+        row = field.row
+        column = field.column
+        adjacent_fields = list()
+
+        for row_shift in [-1, 1]:
+            for col_shift in [-1, 1]:
+                if 0 <= row+row_shift < self.size and 0 <= column+col_shift < self.size:
+                    adjacent_fields.append(self.board_fields[row+row_shift][column+col_shift])
+
+        return adjacent_fields

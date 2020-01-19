@@ -7,7 +7,9 @@ from PyQt5.QtWidgets import QPushButton
 class Pawn(Enum):
     Empty = 0,
     White = 1,
-    Black = 2,
+    White_Q = 2,
+    Black = 3,
+    Black_Q = 4,
 
 
 class BoardField(QPushButton):
@@ -44,10 +46,17 @@ class BoardField(QPushButton):
         self.setStyleSheet(self.styleSheet() + ";border: 3px dashed red;")
 
     def put_pawn(self, pawn):
-        self.setText('O')
         if pawn == Pawn.Black:
+            self.setText('O')
             self.setStyleSheet(self.styleSheet() + ";color: black")
         elif pawn == Pawn.White:
+            self.setText('O')
+            self.setStyleSheet(self.styleSheet() + ";color: white")
+        elif pawn == Pawn.Black_Q:
+            self.setText('Q')
+            self.setStyleSheet(self.styleSheet() + ";color: black")
+        elif pawn == Pawn.White_Q:
+            self.setText('Q')
             self.setStyleSheet(self.styleSheet() + ";color: white")
         self.pawn = pawn
 
@@ -61,3 +70,21 @@ class BoardField(QPushButton):
     @pyqtSlot(name="on_click")
     def on_click(self):
         self.callback(self)
+
+    @staticmethod
+    def should_the_pawn_be_crowned(field):
+        if field.pawn == Pawn.Black_Q or field.pawn == Pawn.White_Q:
+            return False
+        elif field.pawn == Pawn.White and field.row == 0:
+            return True
+        elif field.pawn == Pawn.Black and field.row == 7:
+            return True
+        else:
+            return False
+
+    @staticmethod
+    def crowning_the_pawn(field):
+        if field.pawn == Pawn.Black:
+            field.put_pawn(Pawn.Black_Q)
+        elif field.pawn == Pawn.White:
+            field.put_pawn(Pawn.White_Q)

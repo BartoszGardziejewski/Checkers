@@ -9,5 +9,6 @@ class StrategyProvider:
         self.enemy = enemy
         self.board = board
 
-    def provide_strategy(self):
+    def provide_strategy(self, turns_completed):
+        # Do fuzzy logic stuff here :)
         return AggressiveStrategy(self.ai, self.enemy, self.board)

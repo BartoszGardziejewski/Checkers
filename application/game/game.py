@@ -96,7 +96,9 @@ class Game:
         self.board.set_all_callbacks(self.activate_source_field)
 
     def move_ai(self):
-        was_pawn_captured = self.current_player.make_move(self.board, self.strategy_provider.provide_strategy())
+        was_pawn_captured = self.current_player.make_move(
+            self.board, self.strategy_provider.provide_strategy(self.turns_completed)
+        )
         while was_pawn_captured:
             was_pawn_captured = self.current_player.make_next_move(self.board)
         self.current_player = next(self.players)

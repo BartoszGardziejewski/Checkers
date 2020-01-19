@@ -37,6 +37,7 @@ def determine_stage(completed_turns_number, losing_player_pieces):
 
     system = ctrl.ControlSystem(rules=[rule_beginning, rule_early_middle, rule_late_middle, rule_endgame])
     simulation = ctrl.ControlSystemSimulation(system, clip_to_bounds=True)
+    # view_control_space(simulation)
 
     simulation.input['turns'] = completed_turns_number
     simulation.input['pieces'] = losing_player_pieces
@@ -44,8 +45,9 @@ def determine_stage(completed_turns_number, losing_player_pieces):
     simulation.compute()
     out = simulation.output['stage']
 
-    # view_control_space(simulation)
-    # print(simulation.output['stage'])
+    # print(out)
+    # turns.view(sim=simulation)
+    # pieces.view(sim=simulation)
     # stage.view(sim=simulation)
 
     output_stage = None

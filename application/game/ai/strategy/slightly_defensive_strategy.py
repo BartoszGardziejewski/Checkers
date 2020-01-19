@@ -2,7 +2,7 @@ from game.ai.strategy.strategy import AbstractStrategy
 from widgets.board_field import Pawn
 
 
-class SlightlyDefenciveStrategy(AbstractStrategy):
+class SlightlyDefensiveStrategy(AbstractStrategy):
 
     def __init__(self, ai, enemy, board):
         super().__init__(ai, enemy, board)
@@ -66,4 +66,4 @@ class SlightlyDefenciveStrategy(AbstractStrategy):
 
     @staticmethod
     def name():
-        return "SlightlyDefenciveStrategy"
+        return "SlightlyDefensiveStrategy"

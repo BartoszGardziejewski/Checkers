@@ -54,6 +54,7 @@ def determine_strategy(stage_input, score_input):
     system = ctrl.ControlSystem(
         rules=[rule_defensive, rule_slightly_defensive, rule_slightly_aggressive, rule_aggressive])
     simulation = ctrl.ControlSystemSimulation(system, clip_to_bounds=True)
+    # view_control_space(simulation)
 
     simulation.input['stage'] = stage_input
     simulation.input['score'] = score_input
@@ -61,8 +62,9 @@ def determine_strategy(stage_input, score_input):
     simulation.compute()
     out = simulation.output['strategy']
 
-    # view_control_space(simulation)
-    # print(simulation.output['strategy'])
+    # print(out)
+    # stage.view(sim=simulation)
+    # score.view(sim=simulation)
     # strategy.view(sim=simulation)
 
     output_strategy = None

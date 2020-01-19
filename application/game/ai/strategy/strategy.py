@@ -60,9 +60,14 @@ class AbstractStrategy:
     def _if_pawn_can_be_captured_after_move(self, move):
         move.destination_field.put_pawn(move.source_field.pawn)
         move.source_field.remove_pawn()
+        if move.pawn_to_capture:
+            captured_pawn = move.pawn_to_capture.pawn
+            move.pawn_to_capture.remove_pawn()
         can_be_captured = self._if_pawn_can_be_captured_on_this_field(move.destination_field)
         move.source_field.put_pawn(move.destination_field.pawn)
         move.destination_field.remove_pawn()
+        if move.pawn_to_capture:
+            move.pawn_to_capture.put_pawn(captured_pawn)
         return can_be_captured
 
     def _if_pawn_can_be_captured_on_this_field(self, field):

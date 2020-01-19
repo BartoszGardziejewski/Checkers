@@ -29,32 +29,39 @@ class DefenciveStrategy(AbstractStrategy):
 
     def _get_weights_for_normal_pawn_capturing_move(self, capturing_move):
         weight = 10
-        weight = weight + self._get_weights_of_possible_capture(capturing_move, False)
+        if capturing_move.pawn_to_capture in {Pawn.White_Q, Pawn.Black_Q}:
+            weight = weight + 2
+        if self._if_pawn_can_be_captured_after_move(capturing_move):
+            weight = weight - 5
         if self._if_pawn_can_be_captured_on_this_field(capturing_move.source_field):
             weight = weight + 5
+        weight = weight + self._get_weights_of_possible_capture(capturing_move, False)
         return weight
 
     def _get_weights_for_queen_capturing_move(self, capturing_move):
         weight = 10
-        weight = weight + self._get_weights_of_possible_capture(capturing_move, True)
+        if capturing_move.pawn_to_capture in {Pawn.White_Q, Pawn.Black_Q}:
+            weight = weight + 2
+        if self._if_pawn_can_be_captured_after_move(capturing_move):
+            weight = weight - 8
         if self._if_pawn_can_be_captured_on_this_field(capturing_move.source_field):
             weight = weight + 8
+        weight = weight + self._get_weights_of_possible_capture(capturing_move, True)
         return weight
 
     def _get_weights_of_possible_capture(self, move, is_queen):
         weight = 0
         next_capturing_moves = self._get_capturing_moves_after_move(move)
         if next_capturing_moves:
-            weight = weight + 5
+            weight = weight + 4
             for next_capturing_move in next_capturing_moves:
                 if next_capturing_move.pawn_to_capture in {Pawn.White_Q, Pawn.Black_Q}:
-                    weight = weight + 4
-        else:
-            if self._if_pawn_can_be_captured_on_this_field(move.destination_field):
-                if is_queen:
-                    weight = weight - 8
-                else:
-                    weight = weight - 5
+                    weight = weight + 3
+                if self._if_pawn_can_be_captured_after_move(next_capturing_move):
+                    if is_queen:
+                        weight = weight - 8
+                    else:
+                        weight = weight - 6
         return weight
 
     @staticmethod

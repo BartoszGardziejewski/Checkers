@@ -45,3 +45,15 @@ class Board(QGridLayout):
         for board_fields in self.board_fields:
             for board_field in board_fields:
                 board_field.set_clicked_callback(callback)
+
+    def get_adjacent_fields(self, field):
+        row = field.row
+        column = field.column
+        adjacent_fields = list()
+
+        for row_shift in [-1, 1]:
+            for col_shift in [-1, 1]:
+                if 0 <= row+row_shift < self.size and 0 <= column+col_shift < self.size:
+                    adjacent_fields.append(self.board_fields[row+row_shift][column+col_shift])
+
+        return adjacent_fields

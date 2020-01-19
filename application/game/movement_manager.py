@@ -5,6 +5,21 @@ from game.move import Move
 class MovementManager:
 
     @staticmethod
+    def eval_abstract_moves(board, source_field, player, pawn):
+        possible_moves = list()
+        possible_row_shifts = MovementManager.get_possible_row_shifts(pawn)
+        possible_col_shifts = [-1, 1]
+
+        for row_shift in possible_row_shifts:
+            for col_shift in possible_col_shifts:
+                MovementManager._check_possible_moves_for_shift(
+                    board, possible_moves, player,
+                    source_field, col_shift, row_shift
+                )
+
+        return possible_moves
+
+    @staticmethod
     def eval_moves(board, source_field, player):
         possible_moves = list()
         possible_row_shifts = MovementManager.get_possible_row_shifts(source_field.pawn)

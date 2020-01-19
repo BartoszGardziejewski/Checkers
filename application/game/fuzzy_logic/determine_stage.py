@@ -4,12 +4,12 @@ from matplotlib import pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D  # Required for 3D plotting
 
 
-def determine_stage(completed_turns_number, total_pieces_number):
-    turns = ctrl.Antecedent(np.arange(0, 200, step=1, dtype=int), 'turns')
+def determine_stage(completed_turns_number, losing_player_pieces):
+    turns = ctrl.Antecedent(np.arange(0, 50, step=1, dtype=int), 'turns')
     turns_names = ['low', 'medium', 'high']
     turns.automf(names=turns_names)
 
-    pieces = ctrl.Antecedent(np.arange(0, 24, step=1, dtype=int), 'pieces')
+    pieces = ctrl.Antecedent(np.arange(0, 12, step=1, dtype=int), 'pieces')
     pieces_names = ['low', 'medium', 'high']
     pieces.automf(names=pieces_names)
 
@@ -38,28 +38,36 @@ def determine_stage(completed_turns_number, total_pieces_number):
     system = ctrl.ControlSystem(rules=[rule_beginning, rule_early_middle, rule_late_middle, rule_endgame])
     simulation = ctrl.ControlSystemSimulation(system, clip_to_bounds=True)
 
-    # view_control_space(simulation)
-
     simulation.input['turns'] = completed_turns_number
-    simulation.input['pieces'] = total_pieces_number
+    simulation.input['pieces'] = losing_player_pieces
 
     simulation.compute()
+    out = simulation.output['stage']
 
+    # view_control_space(simulation)
     # print(simulation.output['stage'])
     # stage.view(sim=simulation)
-    # plt.show()
 
-    return simulation.output['stage']
+    output_stage = None
+    max_val = 0
+    for t in stage.terms:
+        mval = np.interp(out, stage.universe, stage[t].mf)
+        if mval > max_val:
+            max_val = mval
+            output_stage = t
+    print(f'Stage of the game: {output_stage}')
+
+    return out
 
 
 def view_control_space(sim):
-    x_space = np.arange(0, 201)
-    y_space = np.arange(0, 25)
+    x_space = np.arange(0, 101)
+    y_space = np.arange(0, 13)
     x, y = np.meshgrid(x_space, y_space)
     z = np.zeros_like(x)
 
-    for turns in range(201):
-        for pieces in range(25):
+    for turns in range(101):
+        for pieces in range(13):
             sim.input['turns'] = x[pieces, turns]
             sim.input['pieces'] = y[pieces, turns]
             sim.compute()

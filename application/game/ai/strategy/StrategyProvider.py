@@ -1,10 +1,8 @@
 import random
 
-from matplotlib import pyplot as plt
-
 from game.ai.strategy.aggressive_strategy import AggressiveStrategy
-from game.ai.strategy.defensive_strategy import DefensiveStrategy
-from game.ai.strategy.slightly_defensive_strategy import SlightlyDefensiveStrategy
+from game.ai.strategy.defensive_strategy import DefenciveStrategy
+from game.ai.strategy.slightly_defensive_strategy import SlightlyDefenciveStrategy
 from game.ai.strategy.slightly_aggressive_strategy import SlightlyAggressiveStrategy
 
 from game.fuzzy_logic.determine_score import determine_score
@@ -21,19 +19,17 @@ class StrategyProvider:
         self.board = board
         self.map_of_possible_strategies = {
             Strategy.aggressive: AggressiveStrategy,
-            Strategy.defensive: DefensiveStrategy,
-            Strategy.slightly_defensive: SlightlyDefensiveStrategy,
+            Strategy.defensive: DefenciveStrategy,
+            Strategy.slightly_defensive: SlightlyDefenciveStrategy,
             Strategy.slightly_aggressive: SlightlyAggressiveStrategy
         }
 
     def provide_strategy(self, turns_completed, white_pawns, black_pawns):
-        plt.close('all')  # do not remove! for graph purposes
         losing_player_pieces = white_pawns if white_pawns < black_pawns else black_pawns
         fuzzy_strategy = determine_strategy(
             determine_stage(turns_completed, losing_player_pieces),
             determine_score(white_pawns, black_pawns)
         )
-        print(f'Strategy: {fuzzy_strategy.name}')
         strategy = self.map_of_possible_strategies[fuzzy_strategy]
-        plt.show()  # do not remove! for graph purposes
+        print(strategy.name())
         return strategy(self.ai, self.enemy, self.board)

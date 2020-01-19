@@ -1,7 +1,16 @@
+from enum import Enum
+
 from skfuzzy import control as ctrl
 import numpy as np
 from matplotlib import pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D  # Required for 3D plotting
+
+
+class Strategy(Enum):
+    defensive = 1,
+    slightly_defensive = 2,
+    slightly_aggressive = 3,
+    aggressive = 4
 
 
 def determine_strategy(stage_input, score_input):
@@ -46,19 +55,29 @@ def determine_strategy(stage_input, score_input):
         rules=[rule_defensive, rule_slightly_defensive, rule_slightly_aggressive, rule_aggressive])
     simulation = ctrl.ControlSystemSimulation(system, clip_to_bounds=True)
 
-    view_control_space(simulation)
+    # view_control_space(simulation)
 
     simulation.input['stage'] = stage_input
     simulation.input['score'] = score_input
 
     simulation.compute()
 
-    print(simulation.output['strategy'])
+    # print(simulation.output['strategy'])
+    # strategy.view(sim=simulation)
+    # plt.show()
 
-    # stage.view(sim=simulation)
-    plt.show()
+    out = simulation.output['strategy']
 
-    return simulation.output['strategy']
+    output_strategy = None
+    max_val = 0
+    for t in strategy.terms:
+        mval = np.interp(out, strategy.universe, strategy[t].mf)
+        # print(t, mval)
+        if mval > max_val:
+            max_val = mval
+            output_strategy = Strategy[t]
+
+    return output_strategy
 
 
 def view_control_space(sim):
@@ -87,6 +106,3 @@ def view_control_space(sim):
     ax.set_zlabel('strategy')
 
     ax.view_init(30, 200)
-
-
-determine_strategy(30, 10)

@@ -1,7 +1,16 @@
+from enum import Enum
+
 from skfuzzy import control as ctrl
 import numpy as np
 from matplotlib import pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D  # Required for 3D plotting
+
+
+class Strategy(Enum):
+    defensive = 1,
+    slightly_defensive = 2,
+    slightly_aggressive = 3,
+    aggressive = 4
 
 
 def determine_strategy(stage_input, score_input):
@@ -46,33 +55,39 @@ def determine_strategy(stage_input, score_input):
         rules=[rule_defensive, rule_slightly_defensive, rule_slightly_aggressive, rule_aggressive])
     simulation = ctrl.ControlSystemSimulation(system, clip_to_bounds=True)
 
-    view_control_space(simulation)
-
     simulation.input['stage'] = stage_input
     simulation.input['score'] = score_input
 
     simulation.compute()
+    out = simulation.output['strategy']
 
-    print(simulation.output['strategy'])
+    # view_control_space(simulation)
+    # print(simulation.output['strategy'])
+    # strategy.view(sim=simulation)
 
-    # stage.view(sim=simulation)
-    plt.show()
+    output_strategy = None
+    max_val = 0
+    for t in strategy.terms:
+        mval = np.interp(out, strategy.universe, strategy[t].mf)
+        if mval > max_val:
+            max_val = mval
+            output_strategy = Strategy[t]
 
-    return simulation.output['strategy']
+    return output_strategy
 
 
 def view_control_space(sim):
-    x_space = np.arange(0, 50)
-    y_space = np.arange(0, 60)
+    x_space = np.arange(0, 41)
+    y_space = np.arange(0, 51)
     x, y = np.meshgrid(x_space, y_space)
     z = np.zeros_like(x)
 
     for stage in range(40):
         for score in range(50):
-            sim.input['stage'] = x[stage, score]
-            sim.input['score'] = y[stage, score]
+            sim.input['stage'] = x[score, stage]
+            sim.input['score'] = y[score, stage]
             sim.compute()
-            z[stage, score] = sim.output['strategy']
+            z[score, stage] = sim.output['strategy']
 
     fig = plt.figure(figsize=(8, 8))
     ax = fig.add_subplot(111, projection='3d')
@@ -87,6 +102,3 @@ def view_control_space(sim):
     ax.set_zlabel('strategy')
 
     ax.view_init(30, 200)
-
-
-determine_strategy(30, 10)

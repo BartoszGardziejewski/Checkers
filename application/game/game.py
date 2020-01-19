@@ -106,6 +106,7 @@ class Game:
     def update_scores(self):
         white_score = self.board.get_fields_with_pawns_of_type(Pawn.White)
         black_score = self.board.get_fields_with_pawns_of_type(Pawn.Black)
+        print()
         print(
             f'turns_completed: {self.turns_completed}; white_pieces: {len(white_score)}; black_pieces: {len(black_score)}')
         return white_score, black_score

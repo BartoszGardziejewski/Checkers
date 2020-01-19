@@ -19,9 +19,13 @@ class AggressiveStrategy(AbstractStrategy):
 
     def _get_weights_for_queen_move(self, possible_move):
         if possible_move.destination_field.row < 4:
-            weight = 7 - possible_move.destination_field.row
+            weight = 4 + \
+                     (possible_move.destination_field.row - possible_move.source_field.row) *\
+                     4-possible_move.source_field.row
         else:
-            weight = possible_move.destination_field.row
+            weight = 4 + \
+                     (possible_move.source_field.row - possible_move.destination_field.row) * \
+                     possible_move.source_field.row - 4
         if self._if_pawn_can_be_captured_after_move(possible_move):
             weight = 0
         else:

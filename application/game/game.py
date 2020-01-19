@@ -67,7 +67,7 @@ class Game:
         self.current_player = next(self.players)
         self.turns_completed += 1
         self.move_ai()
-        self.update_scores()
+        self.white_score, self.black_score = self.update_scores()
         self._start_new_turn()
 
     def _make_a_move(self, field, possible_move):
@@ -96,7 +96,9 @@ class Game:
         self.board.set_all_callbacks(self.activate_source_field)
 
     def move_ai(self):
-        strategy = self.strategy_provider.provide_strategy(self.turns_completed)
+        strategy = self.strategy_provider.provide_strategy(
+            self.turns_completed, len(self.white_score), len(self.black_score)
+        )
         was_pawn_captured = self.current_player.make_move(self.board, strategy)
         while was_pawn_captured:
             was_pawn_captured = self.current_player.make_next_move(self.board, strategy)
@@ -104,8 +106,8 @@ class Game:
         self.turns_completed += 1
 
     def update_scores(self):
-        white_score = self.board.get_fields_with_pawns_of_type(Pawn.White)
-        black_score = self.board.get_fields_with_pawns_of_type(Pawn.Black)
+        white_score = self.board.get_fields_with_pawns_of_types([Pawn.White, Pawn.White_Q])
+        black_score = self.board.get_fields_with_pawns_of_types([Pawn.Black, Pawn.Black_Q])
         print()
         print(
             f'turns_completed: {self.turns_completed}; white_pieces: {len(white_score)}; black_pieces: {len(black_score)}')

@@ -4,7 +4,7 @@ from widgets.board_field import BoardField
 from widgets.board_field import Pawn
 from game.player import Player
 from game.ai.ai import AiPlayer
-from game.ai.StrategyProvider import StrategyProvider
+from game.ai.strategy.StrategyProvider import StrategyProvider
 from game.movement_manager import MovementManager
 
 

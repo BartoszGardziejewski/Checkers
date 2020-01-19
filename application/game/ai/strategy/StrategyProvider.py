@@ -1,5 +1,5 @@
 
-from game.ai.aggressive_strategy import AggressiveStrategy
+from game.ai.strategy.aggressive_strategy import AggressiveStrategy
 
 
 class StrategyProvider:

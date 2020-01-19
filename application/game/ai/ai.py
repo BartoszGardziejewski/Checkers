@@ -30,12 +30,12 @@ class AiPlayer(Player):
             BoardField.crowning_the_pawn(chosen_move.destination_field)
         return was_pawn_captured
 
-    def make_next_move(self, board):
+    def make_next_move(self, board, strategy):
         possible_next_moves = MovementManager.eval_moves(board, self.last_field, self)
         possible_next_moves = MovementManager.extract_capturing_moves(possible_next_moves)
         if len(possible_next_moves) == 0:
             return False
-        next_move = random.choice(possible_next_moves)
+        next_move = strategy.evaluate_moves_weights(possible_next_moves)
         return self._make_move(next_move)
 
     def choose_move(self, board, strategy):

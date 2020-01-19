@@ -4,7 +4,7 @@ from widgets.board_field import BoardField
 from widgets.board_field import Pawn
 from game.player import Player
 from game.ai.ai import AiPlayer
-from game.ai.StrategyProvider import StrategyProvider
+from game.ai.strategy.StrategyProvider import StrategyProvider
 from game.movement_manager import MovementManager
 
 
@@ -96,11 +96,10 @@ class Game:
         self.board.set_all_callbacks(self.activate_source_field)
 
     def move_ai(self):
-        was_pawn_captured = self.current_player.make_move(
-            self.board, self.strategy_provider.provide_strategy(self.turns_completed)
-        )
+        strategy = self.strategy_provider.provide_strategy(self.turns_completed)
+        was_pawn_captured = self.current_player.make_move(self.board, strategy)
         while was_pawn_captured:
-            was_pawn_captured = self.current_player.make_next_move(self.board)
+            was_pawn_captured = self.current_player.make_next_move(self.board, strategy)
         self.current_player = next(self.players)
         self.turns_completed += 1
 

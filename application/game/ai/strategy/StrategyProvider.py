@@ -10,6 +10,8 @@ from game.fuzzy_logic.determine_stage import determine_stage
 from game.fuzzy_logic.determine_strategy import determine_strategy
 from game.fuzzy_logic.determine_strategy import Strategy
 
+from matplotlib import pyplot as plt
+
 
 class StrategyProvider:
 
@@ -25,6 +27,7 @@ class StrategyProvider:
         }
 
     def provide_strategy(self, turns_completed, white_pawns, black_pawns):
+        plt.close('all')
         losing_player_pieces = white_pawns if white_pawns < black_pawns else black_pawns
         fuzzy_strategy = determine_strategy(
             determine_stage(turns_completed, losing_player_pieces),
@@ -32,4 +35,5 @@ class StrategyProvider:
         )
         strategy = self.map_of_possible_strategies[fuzzy_strategy]
         print(f'Chosen strategy: {strategy.name()}')
+        plt.show()
         return strategy(self.ai, self.enemy, self.board)

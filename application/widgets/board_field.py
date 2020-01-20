@@ -15,7 +15,7 @@ class Pawn(Enum):
 class BoardField(QPushButton):
     def __init__(self, row, column):
         super().__init__()
-        size = 50
+        size = 65
         self.setFixedSize(QSize(size, size))
         self.callback = lambda field: print("Error: BoardField.callback NOT DEFINED")
         self.clicked.connect(self.on_click)

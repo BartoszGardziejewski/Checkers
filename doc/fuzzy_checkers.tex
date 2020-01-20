@@ -1,0 +1,280 @@
+\documentclass{article}
+
+\usepackage{arxiv}
+
+\usepackage[utf8]{inputenc} % allow utf-8 input
+\usepackage[T1]{fontenc}    % use 8-bit T1 fonts
+\usepackage{hyperref}       % hyperlinks
+\usepackage{url}            % simple URL typesetting
+\usepackage{booktabs}       % professional-quality tables
+\usepackage{amsfonts}       % blackboard math symbols
+\usepackage{nicefrac}       % compact symbols for 1/2, etc.
+\usepackage{microtype}      % microtypography
+\usepackage{lipsum}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{enumitem}
+
+\title{Sofcomputing:\\Fuzzy logic used in simple checkers game}
+
+\author{
+  Bartosz Gardziejewski\\
+  Wroclaw University Of Science and Technology\\
+  Computer Science, Internet Engineering\\
+  \texttt{226128@student.pwr.edu.pl} \\
+   \And
+  Rafał Grądkowski\\
+  Wroclaw University Of Science and Technology\\
+  Computer Science, Internet Engineering\\
+  \texttt{194479@student.pwr.edu.pl} \\
+}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Ranging from artificial intelligence to the control of engineering systems, a number of different applications relies on fuzzy logic as an important tool. In this project, a simple fuzzy logic model was proposed to study it's performance as an artificial player in a simulated checkers game implemented using Python language capabilities.
+\end{abstract}
+
+\keywords{Softcomputing \and Fuzzy logic \and Checkers \and Python \and scikit-fuzzy}
+
+\section{Introduction}
+Fuzzy logic had been studied since 1920s, notably by Łukasiewicz and Tarski \cite{pelletier_2000}, as \emph{infinite-valued logic}, because the term itself was only proposed by Lotfi Zadeh in the 1965 with his \emph{fuzzy set theory} \cite{ZADEH1965338, sep-logic-fuzzy}.
+
+It is an approach to computing that, rather than using the usual true or false boolean logic, is based on an idea of 'degrees of truth', where the truth values may be any real number between 0 and 1 both inclusive \cite{math_princ}. This form of many-valued logic is employed to handle the concept of partial truth, most often deduced from imprecise and non-numerical information. Fuzzy models have the capability of recognising, interpreting, utilising, manipulating and representing data and information that are vague and lack certainty.
+
+Checkers (also known as Draughts) is a strategy board game for two players which involve diagonal moves of uniform game pieces and mandatory captures by jumping over opponent pieces. Nowadays, many versions of the game exist, however only one specific was chosen to be implemented for purposes of the project - American checkers, played on an 8x8 checkerboard.
+
+\section{Checkers}
+\label{sec:checkers}
+
+American checkers, played on 8x8 checkerboard [Fig. \ref{fig:checkerboard}], is played by two opponents on opposite sides of the gameboard. Only the dark squares of the checkerboard are used. One player has the dark pieces, the other the light pieces. Players begin with twelve pieces each and the player using light pieces starts the game. Players alternate turns and cannot move an opponent's pieces. A move consist of moving a piece diagonally to an adjacent unoccupied field. If the adjacent field contains an opponent's piece, and the field immediately beyond is vacant, the piece must be captured (removed from the game) by jumping over it. The player, who cannot move because of being blocked or without pieces remaining, loses the game. When a piece reaches the farthest row forward it is marked as a 'Queen piece' and it acquires additional powers, including the ability to move and capture backwards [Fig. \ref{fig:checkerboard_queen}].
+
+Artificial player in project's implementation always starts as second, playing with dark pieces.
+
+\begin{figure}[tbhp]
+  \centering
+      \includegraphics[scale=0.75]{images/checkers.png}
+  \caption{Basic view of the checkers game implemented for the purpose of this project, showing placement of the pieces at the beginning of a new game.}
+  \label{fig:checkerboard}
+\end{figure}
+
+\begin{figure}[tbhp]
+  \centering
+      \includegraphics[scale=0.75]{images/checkers_queen.png}
+  \caption{Checkerboard with dark Queen piece visible in bottom left corner.}
+  \label{fig:checkerboard_queen}
+\end{figure}
+
+\section{Fuzzy logic model}
+
+Fuzzy logic model proposed in this paper consists of separate fuzzy control systems [FCS] linked by simple IF statements. Each FCS tries to resolve a problem that resembles a commonly known \emph{Tipping Problem} [Fig. \ref{fig:tipping_problem}]. IF statements control the flow of data in the model to optimally choose next move in the game based on results returned by each FCS.
+
+\begin{figure}[tbhp]
+  \centering
+      \includegraphics[scale=0.75]{images/tipping_problem.png}
+  \caption{Control space of an exemplary Tipping Problem.}
+  \label{fig:tipping_problem}
+\end{figure}
+
+\subsection{Terminology}
+
+A fuzzy variable has a \emph{crisp value} which takes on some number over a pre-defined domain called a \emph{universe} in fuzzy logic terms. The crisp value is how the variable can be described using normal mathematics. For example, taking previously mentioned Tipping Problem as a base for explanation in this section, if fuzzy variable was to describe how much to tip a waiter in restaurant, it’s universe could be 0 to 25\% and it might take on a crisp value of 15\%.
+
+The fuzzy set, which can be used to describe the “fuzzy value” of a fuzzy variable, is a set of terms used to describe the variable. These terms are usually adjectives like “low,” “slow,” and “good.” Each term has a membership function that defines how a crisp value maps to the term on a scale of 0 to 1. In essence, it describes “what” something is.
+
+Commonly, three types of the membership functions are used: triangular, trapezoidal and gaussian. In the project, triangular function was used for all membership functions [Fig. \ref{fig:mf}].
+
+\begin{figure}[tbhp]
+  \centering
+      \includegraphics[width=0.5\textwidth]{images/strat_stage_mf.png}
+      \includegraphics[width=0.5\textwidth]{images/strat_score_mf.png}
+      \includegraphics[width=0.5\textwidth]{images/strat_strat_mf.png}
+  \caption{Membership functions used to determine player's strategy.}
+  \label{fig:mf}
+\end{figure}
+
+Therefore, a “good tip” might have a membership function which has non-zero values between 15 and 25\%, with 25\% being a “very good tip” (e.g., it’s membership is 1.0) and 15\% being a “almost a good tip” (e.g., its membership is 0.1).
+
+A FCS links fuzzy variables using a \emph{set of rules}, which are simply mappings that describe how one or more fuzzy variables relates to another. These are expressed in terms of an IF-THEN statement; the IF part is called the \emph{antecedent} and the THEN part is the \emph{consequent}. In the tipping example, one rule might be “IF the service was good THEN the tip will be good.”
+
+\subsection{Strategies}
+
+Four strategies were designed to choose from: defensive, slightly defensive, slightly aggressive and aggressive. Each strategy has it's own rules determining how player's possible moves are prioritized. Based on these rules, each move from a list of possible moves is given some weight, used to sort the list and choose the best one from strategy's point of view. Strategy is checking only one turn ahead, which means that weight evaluation knows that moving piece cause losing it or capturing enemy piece in next turn and nothing beyond that. The move weights in strategies are evaluated as follows:
+\begin{itemize} 
+\item \textbf{Defensive}:
+    
+    Concentrates on pushing pieces that are behind, avoids capturing enemy pieces if it mean losing a piece, keeps Queens out of the game if possible.
+\item \textbf{Slightly defensive}:
+
+   Concentrates on keeping a balance between moving pieces in front and in the back of the board, avoids capturing enemy pieces if it mean losing a piece.
+\item \textbf{Slightly aggressive}:
+
+   Concentrates on keeping a balance between moving pieces in front and in the back of the board, captures enemy pieces even if it mean losing a piece, pushes Queens towards the center of the board.
+\item \textbf{Aggressive}:
+
+   Concentrates on pushing pieces in front towards enemy side, captures enemy pieces even if it mean losing a piece (including Queens, if it will cause multiple captures of enemy pieces), pushes Queens toward center of the board.
+\end{itemize}
+
+The weights in those strategies may be tweaked for betterer perform, although values chosen seem to work properly when connected with fuzzy logic strategy determiner.
+
+\subsection{Model's flowchart}
+
+Each FCS used in the model [Fig. \ref{fig:flowchart}] and all variables describing them were presented in details in below subsections. 
+
+\begin{figure}[tbhp]
+  \centering
+      \includegraphics[width=1\textwidth]{images/flowchart.png}
+  \caption{Artificial intelligence player decision flowchart with fuzzy logic elements.}
+  \label{fig:flowchart}
+\end{figure}
+
+\subsubsection{Determining game's stage}
+
+In this particular case, if number of passed turns exceeds value of 200, it's artificially set to be equal to 200. Rules described on Fig. \ref{fig:stage_rules} were applied to FCS to determine game's stage, which resulted in control space that can be seen on Fig. \ref{fig:stage}.
+
+\begin{itemize} 
+\item Antecedents
+     \begin{itemize} 
+        \item Number of passed turns
+            \begin{itemize}
+                \item Crisp value range: 0 - 200
+                \item Fuzzy set: [Low, Medium, High]
+            \end{itemize}
+        \item Number of pieces held by losing player
+            \begin{itemize}
+                \item Crisp value range: 0 - 12
+                \item Fuzzy set: [Low, Medium, High]
+            \end{itemize}
+     \end{itemize}
+\item Consequents
+     \begin{itemize} 
+        \item Game's stage
+            \begin{itemize}
+                \item Crisp value range: 0 - 40
+                \item Fuzzy set: [Beginning, Early middle, Late middle, Endgame]
+            \end{itemize}
+     \end{itemize}
+\end{itemize}
+
+\begin{figure}[tbhp]
+  \centering
+      \includegraphics[width=0.75\textwidth]{images/stage_rules.png}
+  \caption{Rules applied to FCS to determine game's stage.}
+  \label{fig:stage_rules}
+\end{figure}
+
+\begin{figure}[tbhp]
+  \centering
+      \includegraphics[width=1\textwidth]{images/determine_stage.png}
+  \caption{Control space 3D plot of the system responsible for determining stage of the game.}
+  \label{fig:stage}
+\end{figure}
+
+\subsubsection{Determining artificial player's score}
+
+Rules described on Fig. \ref{fig:score_rules} were applied to FCS to determine player's score, which resulted in control space that can be seen on Fig. \ref{fig:score}.
+
+\begin{itemize} 
+\item Antecedents
+     \begin{itemize} 
+        \item Number of player's pieces
+            \begin{itemize}
+                \item Crisp value range: 0 - 12
+                \item Fuzzy set: [Low, Low medium, High medium, High]
+            \end{itemize}
+        \item Number of opponent's pieces
+            \begin{itemize}
+                \item Crisp value range: 0 - 12
+                \item Fuzzy set: [Low, Low medium, High medium, High]
+            \end{itemize}
+     \end{itemize}
+\item Consequents
+     \begin{itemize} 
+        \item Player's score
+            \begin{itemize}
+                \item Crisp value range: 0 - 50
+                \item Fuzzy set: [Losing, Slightly losing, Tie, Slightly winning, Winning]
+            \end{itemize}
+     \end{itemize}
+\end{itemize}
+
+\begin{figure}[tbhp]
+  \centering
+      \includegraphics[width=1\textwidth]{images/score_rules.png}
+  \caption{Rules applied to FCS to determine player's score.}
+  \label{fig:score_rules}
+\end{figure}
+
+\begin{figure}[tbhp]
+  \centering
+      \includegraphics[width=1\textwidth]{images/determine_score.png}
+  \caption{Control space 3D plot of the system responsible for determining player's score.}
+  \label{fig:score}
+\end{figure}
+
+\subsubsection{Determining artificial player's strategy}
+
+Rules described on Fig. \ref{fig:strategy_rules} were applied to FCS to determine player's strategy, which resulted in control space that can be seen on Fig. \ref{fig:strategy}.
+
+\begin{itemize} 
+\item Antecedents
+     \begin{itemize} 
+        \item Game's stage
+            \begin{itemize}
+                \item Crisp value range: 0 - 40
+                \item Fuzzy set: [Beginning, Early middle, Late middle, Endgame]
+            \end{itemize}
+        \item Player's score
+            \begin{itemize}
+                \item Crisp value range: 0 - 50
+                \item Fuzzy set: [Losing, Slightly losing, Tie, Slightly winning, Winning]
+            \end{itemize}
+     \end{itemize}
+\item Consequents
+     \begin{itemize} 
+        \item Player's strategy
+            \begin{itemize}
+                \item Crisp value range: 0 - 40
+                \item Fuzzy set: [Defensive, Slightly defensive, Slightly aggressive, Aggressive]
+            \end{itemize}
+     \end{itemize}
+\end{itemize}
+
+\begin{figure}[tbhp]
+  \centering
+      \includegraphics[width=1\textwidth]{images/strategy_rules.png}
+  \caption{Rules applied to FCS to determine player's strategy.}
+  \label{fig:strategy_rules}
+\end{figure}
+
+\begin{figure}[tbhp]
+  \centering
+      \includegraphics[width=1\textwidth]{images/determine_strategy.png}
+  \caption{Control space 3D plot of the system responsible for determining player's strategy.}
+  \label{fig:strategy}
+\end{figure}
+
+\subsection{Results}
+
+Proposed sets of inputs and rules, although natural from average human perspective, especially for determining player's score and stage of the game, didn't perform as well as expected. Artificial player lacked any dynamism, preferring slightly defensive and slightly aggressive strategies, while pure defensive and aggressive strategies were rarely chosen [Fig. \ref{fig:bugs}]. Tweaking multiple model's values was giving promising results, however simultaneously decreasing performance in other areas, e.g. choosing purely defensive / aggressive strategies rather than their 'slight' variations. 
+
+\begin{figure}[tbhp]
+  \centering
+      \includegraphics[width=0.5\textwidth]{images/strat_bug1.png}
+      \includegraphics[width=0.5\textwidth]{images/strat_bug2.png}
+      \includegraphics[width=0.5\textwidth]{images/strat_bug3.png}
+  \caption{Determining 'slight aggressive' strategy when pure 'aggressive' strategy should be chosen according to rules specified on Fig. \ref{fig:strategy_rules}.}
+  \label{fig:bugs}
+\end{figure}
+
+\section{Conclusions}
+
+Despite checkers are considered a solved game since 2007 \cite{Schaeffer1518}, which in game theory means that a game's outcome can be correctly predicted from any position, assuming that both players play perfectly, the model proposed in this project certainly does not achieve a perfect play. However, it can be definitely stated that the model can be a good opponent for a casual player.
+
+This implies that choosing a fuzzy logic controller system for gaming purposes can be a good choice, as it is easy to design and implement, but only when achieving casual player's level of expertise is considered fitting. To tune such model to make better decisions could be considered too time consuming because all of model's flowchart, inputs, outputs, rules and membership functions must be engineered solely by hand.
+
+\bibliographystyle{unsrt}  
+\bibliography{references}
+
+\end{document}
